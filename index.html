@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>造物法则</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030310;
+    --text: #fafafc;
+    --text-body: #f6f6fc;
+    --text-soft: #d0d2de;
+    --text-mute: #747680;
+    --blue: #6aa8ff;
+    --blue-hot: #90c4ff;
+    --cyan: #60e0f8;
+    --gold: #d4a84b;
+    --gold-hot: #f0d070;
+    --red: #f05050;
+    --serif: 'Noto Serif SC', 'STSong', 'Songti SC', serif;
+    --display: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+    --brush: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+    --en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(ellipse 120% 60% at 35% 50%, rgba(212,168,75,0.04) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 50% at 65% 48%, rgba(106,168,255,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 30% at 50% 52%, rgba(200,180,220,0.025) 0%, transparent 60%),
+      var(--bg);
+    color:var(--text-body); font-family:var(--serif); font-weight:400; line-height:1.95;
+    overflow-x:hidden; min-height:100vh;
+    -webkit-font-smoothing:antialiased; cursor:none;
+  }
+  @media(hover:none){ body{cursor:auto;} .cursor-core,.cursor-halo,.cursor-aura{display:none!important;} }
+
+  #stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:3; opacity:0.025; mix-blend-mode:overlay; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .cursor-aura { position:fixed; pointer-events:none; z-index:9998; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle, rgba(160,190,240,0.10) 0%, rgba(106,168,255,0.03) 30%, transparent 65%); transform:translate(-50%,-50%); will-change:left,top; }
+  .cursor-halo { position:fixed; pointer-events:none; z-index:9999; width:28px; height:28px; border:1.2px solid rgba(255,255,255,0.35); border-radius:50%; transform:translate(-50%,-50%); will-change:left,top,width,height,border-color; transition:width .3s cubic-bezier(.16,1,.3,1),height .3s cubic-bezier(.16,1,.3,1),border-color .3s ease,box-shadow .3s ease; }
+  .cursor-core { position:fixed; pointer-events:none; z-index:10000; width:4px; height:4px; background:#fff; border-radius:50%; box-shadow:0 0 6px #fff,0 0 18px rgba(106,168,255,.85),0 0 40px rgba(96,224,248,.45); transform:translate(-50%,-50%); will-change:left,top; }
+  body.hover-link .cursor-halo { width:54px; height:54px; border-color:rgba(106,168,255,.65); box-shadow:0 0 24px rgba(106,168,255,.28); }
+  body.hover-link .cursor-core { box-shadow:0 0 10px #fff,0 0 28px rgba(106,168,255,1),0 0 55px rgba(96,224,248,.75); }
+  body.clicking .cursor-halo { transform:translate(-50%,-50%) scale(.4)!important; border-color:rgba(255,255,255,.8); }
+  body.clicking .cursor-core { transform:translate(-50%,-50%) scale(2); }
+
+  .progress { position:fixed; top:0; left:0; height:1.5px; background:linear-gradient(90deg,transparent,var(--gold),var(--gold-hot),var(--gold),transparent); z-index:200; width:0%; box-shadow:0 0 8px rgba(212,168,75,.5); transition:width .05s linear; }
+
+  .audio-btn { position:fixed; top:28px; right:28px; z-index:200; width:38px; height:38px; border:1px solid rgba(255,255,255,.15); background:rgba(3,3,16,.7); backdrop-filter:blur(12px); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:none; transition:all .35s cubic-bezier(.16,1,.3,1); color:var(--text-mute); }
+  .audio-btn:hover { border-color:rgba(106,168,255,.6); color:var(--blue); }
+  .audio-btn.on { border-color:var(--blue); color:var(--cyan); box-shadow:0 0 20px rgba(106,168,255,.25); }
+  .audio-btn .viz { display:flex; gap:2px; align-items:flex-end; height:13px; }
+  .audio-btn .viz i { width:2px; background:currentColor; border-radius:1px; }
+  .audio-btn .viz i:nth-child(1){height:4px} .audio-btn .viz i:nth-child(2){height:9px} .audio-btn .viz i:nth-child(3){height:6px}
+  .audio-btn.on .viz i{animation:viz 1s ease-in-out infinite}
+  .audio-btn.on .viz i:nth-child(2){animation-delay:.13s} .audio-btn.on .viz i:nth-child(3){animation-delay:.26s}
+  @keyframes viz{0%,100%{height:3px}50%{height:12px}}
+
+  .folio-r,.folio-l { position:fixed; top:50%; z-index:50; font-family:var(--en); font-size:10px; letter-spacing:.55em; color:var(--text-mute); text-transform:uppercase; white-space:nowrap; pointer-events:none; }
+  .folio-r { right:20px; transform:translateY(-50%) rotate(90deg); transform-origin:right center; }
+  .folio-l { left:20px; transform:translateY(-50%) rotate(-90deg); transform-origin:left center; }
+  @media(max-width:720px){.folio-r,.folio-l{display:none}}
+
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:80px 30px; position:relative; z-index:2; }
+  .hero-eyebrow { font-family:var(--en); font-size:13px; letter-spacing:.6em; color:var(--gold); text-transform:uppercase; margin-bottom:48px; }
+  .hero-eyebrow .d { color:var(--red); margin:0 12px; display:inline-block; transform:translateY(-2px); }
+  .hero h1 { font-family:var(--serif); font-weight:900; font-size:clamp(76px,12vw,190px); line-height:1; letter-spacing:.05em; color:var(--text); text-align:center; }
+  .hero h1 .em { display:block; font-family:var(--display); font-weight:400; font-style:italic; color:var(--blue-hot); letter-spacing:.01em; margin-top:.03em; text-shadow:0 0 60px rgba(106,168,255,.55),0 0 120px rgba(96,224,248,.3); }
+  .hero-line { width:100px; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); margin:42px auto; }
+  .hero-sub { font-family:var(--serif); font-weight:300; font-size:clamp(15px,1.3vw,17px); color:var(--text-soft); letter-spacing:.22em; text-align:center; line-height:2.2; max-width:720px; }
+  .hero-scroll { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); font-family:var(--en); font-size:10px; letter-spacing:.5em; color:var(--text-mute); text-transform:uppercase; }
+  .hero-scroll::after { content:''; display:block; width:1px; height:36px; background:var(--text-mute); margin:12px auto 0; }
+
+  .sec { max-width:860px; margin:0 auto; padding:120px 30px; position:relative; z-index:2; }
+  .sec-rule { width:50px; height:1px; background:var(--gold); margin-bottom:36px; }
+  .sec-num { display:flex; align-items:baseline; gap:22px; margin-bottom:20px; }
+  .sec-num .cn { font-family:var(--brush); font-size:clamp(64px,9vw,110px); color:var(--gold); line-height:.9; }
+  .sec-num .en { font-family:var(--en); font-style:italic; font-size:clamp(18px,2.2vw,26px); color:var(--blue); letter-spacing:.08em; }
+  .sec-title { font-family:var(--serif); font-weight:700; font-size:clamp(34px,5vw,58px); line-height:1.22; letter-spacing:.02em; color:var(--text); margin-bottom:38px; }
+  .sec-title em { color:var(--gold); font-style:normal; }
+  .sec-body { font-size:19px; line-height:2.15; color:var(--text-body); }
+  .sec-body p { margin-bottom:1.5em; }
+  .sec-body strong { color:var(--text); font-weight:600; background:linear-gradient(180deg,transparent 58%,rgba(212,168,75,.22) 58%); padding:0 3px; }
+  .sec-body em { color:var(--blue-hot); font-style:normal; font-weight:500; }
+  .sec-body .pullquote { border-left:3px solid var(--gold); padding:16px 0 16px 28px; margin:48px 0 48px 6px; font-family:var(--en); font-style:italic; color:var(--gold); font-size:17px; line-height:1.7; letter-spacing:.02em; }
+  .sec-body .shout { font-family:var(--brush); font-size:clamp(46px,7vw,80px); color:var(--gold-hot); text-align:center; margin:52px 0; line-height:1.15; letter-spacing:.1em; text-shadow:0 0 30px rgba(212,168,75,.25); }
+  .sec-body .shout-sm { font-family:var(--display); font-size:clamp(26px,3.5vw,40px); color:var(--blue-hot); text-align:center; margin:40px 0; line-height:1.35; letter-spacing:.07em; text-shadow:0 0 24px rgba(106,168,255,.3); }
+
+  .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:50px 36px; margin:60px 0; padding:60px 0; border-top:1px solid rgba(255,255,255,.1); border-bottom:1px solid rgba(255,255,255,.1); }
+  @media(max-width:600px){.stat-row{grid-template-columns:1fr;gap:36px}}
+  .stat { text-align:center; }
+  .stat-val { font-family:var(--en); font-weight:400; font-size:clamp(48px,8vw,90px); color:var(--gold); line-height:1; margin-bottom:12px; letter-spacing:-.02em; }
+  .stat-val.blue { color:var(--blue-hot); }
+  .stat-lbl { font-family:var(--serif); font-size:13px; color:var(--text-soft); letter-spacing:.15em; line-height:1.7; }
+
+  .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin:56px 0; }
+  @media(max-width:600px){.card-grid{grid-template-columns:1fr}}
+  .card-wrap { perspective:1200px; }
+  .card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:40px 34px; position:relative; overflow:hidden; backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); cursor:none; will-change:transform; transition:border-color .4s ease,box-shadow .4s ease,background .4s ease; }
+  .card::before { content:''; position:absolute; inset:0; background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%), rgba(106,168,255,.10), transparent 50%); opacity:0; transition:opacity .35s ease; pointer-events:none; z-index:0; }
+  .card:hover { background:rgba(255,255,255,.05); border-color:rgba(106,168,255,.4); box-shadow:0 0 45px rgba(106,168,255,.1); }
+  .card:hover::before { opacity:1; }
+  .card>*{position:relative;z-index:1}
+  .card-tag { font-family:var(--en); font-size:11px; letter-spacing:.4em; color:var(--gold); margin-bottom:22px; text-transform:uppercase; }
+  .card h4 { font-family:var(--serif); font-weight:600; font-size:21px; color:var(--text); margin-bottom:14px; letter-spacing:.02em; }
+  .card p { font-size:15px; color:var(--text-soft); line-height:1.85; font-weight:300; }
+
+  .break { min-height:70vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:80px 30px; text-align:center; position:relative; z-index:2; overflow:hidden; }
+  .break-watermark { font-family:var(--brush); font-size:clamp(130px,24vw,260px); color:var(--gold); opacity:.03; position:absolute; pointer-events:none; user-select:none; line-height:1; }
+  .break q { font-family:var(--serif); font-weight:200; font-size:clamp(42px,6.5vw,82px); line-height:1.3; color:var(--text); max-width:1000px; position:relative; z-index:1; }
+  .break q em { color:var(--gold-hot); font-style:normal; font-weight:600; text-shadow:0 0 24px rgba(212,168,75,.4); }
+  .break q .blu { color:var(--blue-hot); }
+  .break-att { margin-top:44px; font-family:var(--en); font-style:italic; font-size:14px; letter-spacing:.35em; color:var(--gold); text-transform:uppercase; }
+
+  .close { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:80px 30px; text-align:center; position:relative; z-index:2; background:linear-gradient(to bottom,transparent,rgba(3,3,16,.95)); }
+  .close-pre { font-family:var(--serif); font-weight:300; font-size:clamp(19px,2.3vw,30px); color:var(--text-soft); letter-spacing:.16em; line-height:2.1; max-width:780px; margin-bottom:50px; }
+  .close-pre strong { color:var(--gold); font-weight:500; }
+  .close-rule { width:1px; height:60px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); margin:44px auto; }
+  .close-big { display:flex; flex-direction:column; gap:.02em; }
+  .close-big .w { font-family:var(--serif); font-weight:900; font-size:clamp(110px,19vw,240px); line-height:1; letter-spacing:.08em; color:var(--text); }
+  .close-big .w:nth-child(2) { color:var(--gold); font-family:var(--display); font-weight:400; font-style:italic; text-shadow:0 0 60px rgba(212,168,75,.5); }
+  .close-tag { margin-top:54px; font-family:var(--en); font-style:italic; font-size:13px; letter-spacing:.45em; color:var(--gold); text-transform:uppercase; }
+
+  footer { position:relative; z-index:2; padding:54px 30px; text-align:center; border-top:1px solid rgba(255,255,255,.08); background:rgba(3,3,16,.97); }
+  footer .mark { font-family:var(--brush); color:var(--gold); font-size:30px; margin-bottom:20px; }
+  footer p { font-family:var(--serif); font-size:12px; letter-spacing:.2em; color:var(--text-mute); line-height:2; }
+  footer p.en { font-family:var(--en); font-style:italic; letter-spacing:.3em; }
+
+  ::selection { background:var(--gold); color:var(--bg); }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="cursor-aura" id="c-aura"></div>
+<div class="cursor-halo" id="c-halo"></div>
+<div class="cursor-core" id="c-core"></div>
+
+<div class="progress" id="progress"></div>
+
+<button class="audio-btn" id="audio-btn" data-interactive>
+  <span class="viz"><i></i><i></i><i></i></span>
+</button>
+
+<div class="folio-r">GENESIS · MMXXVI · VOL.I</div>
+<div class="folio-l">THE LAWS OF CREATION</div>
+
+<section class="hero">
+  <p class="hero-eyebrow">MMXXVI<span class="d">·</span>JUNE<span class="d">·</span>MANIFESTO</p>
+  <h1>造物<span class="em">法则</span></h1>
+  <div class="hero-line"></div>
+  <p class="hero-sub">宇宙运转了 138 亿年，只靠四条法则。<br>从达芬奇到马斯克，无一例外。<br>这不是鸡汤。这是物理定律。</p>
+  <div class="hero-scroll">Descend</div>
+</section>
+
+<section class="sec" id="s1">
+  <div class="sec-rule"></div>
+  <div class="sec-num"><span class="cn">壹</span><span class="en">— Gravity</span></div>
+  <h2 class="sec-title">你的愿景<em>有多重</em>，<br>你的世界就有多大</h2>
+  <div class="sec-body">
+    <p>物理学第一课：<strong>质量越大，引力越强。</strong>创造的法则与此完全相同 —— 你对未来的想象有多重，你能吸引的资源、人才和运气就有多大。</p>
+    <p>大多数人的愿景质量相当于一颗鹅卵石。它能吸引什么？<em>什么也没有。</em>少数人的愿景质量相当于地球 —— 它能拉住月亮。极少数人的愿景质量相当于太阳 —— 整个星系绕着他旋转。</p>
+    <p class="shout">你的愿景有多重？</p>
+    <p>2002 年，马斯克对外宣称要让火箭降落回收。全世界都在笑。PayPal 刚卖掉，他拿到 1.8 亿美元。他把 <strong>1 亿</strong> 投进了 SpaceX，剩下的投进了 Tesla —— 一家当时所有人都在嘲笑的电动车公司。到了 2008 年，两家公司同时濒临破产，圣诞节前他连下个月的工资都发不出来。</p>
+    <p class="pullquote">When something is important enough, you do it even if the odds are not in your favor. — Elon Musk</p>
+    <p>注意这个句子里的关键词：<em>important enough</em>。不是 "profitable enough"，不是 "likely enough"，不是 "reasonable enough"。是 "important enough"。这就是引力法则的核心 —— 你的愿景必须重到连你自己都无法逃脱它的引力场。</p>
+    <p>如果你发现自己三天打鱼两天晒网，<strong>问题不在你的执行力。问题在于你的愿景根本不够重。</strong>它没有弯曲你身边的时空，没有把机会拉向你的轨道。你需要的不是更强的自律，你需要的是<em>更大的想象</em>。</p>
+  </div>
+</section>
+
+<section class="sec" id="s2">
+  <div class="sec-rule"></div>
+  <div class="sec-num"><span class="cn">贰</span><span class="en">— Escape Velocity</span></div>
+  <h2 class="sec-title">常规思维是一口<em>重力井</em>，<br>你必须达到逃逸速度</h2>
+  <div class="sec-body">
+    <p>地球的逃逸速度是 <strong>11.2 公里/秒</strong>。达不到这个速度，你永远飞不出大气层。创造同样有一条最低速度线 —— 低于它，你永远突破不了常规。</p>
+    <p class="shout-sm">常规思维 ＝ 重力井</p>
+    <p>什么是常规思维？「这行不行啊」「有没有人做过」「万一失败了呢」「别人会怎么看我」—— 这些念头的集合，就是一口重力井。它们共享同一个引力源：<em>对确定性的病态需求</em>。</p>
+    <p>人类大脑进化了几百万年，最擅长的事情就是<strong>避免损失</strong>。在原始社会，这个机制保护了我们 —— 别碰那条蛇、别走那条路。但在创造的世界里，这个机制是<em>毒药</em>。因为创造的本质就是走进未知，而未知在进化算法里永远被标记为「危险」。</p>
+    <p class="pullquote">The reasonable man adapts himself to the world. The unreasonable one persists in trying to adapt the world to himself. Therefore all progress depends on the unreasonable man. — George Bernard Shaw</p>
+    <p>SpaceX 三次发射失败。第四次再失败，公司倒闭。全世界的航天机构都在用同一个剧本：国家出资、成本最大化、零容错。马斯克问了一个不该问的问题：<strong>凭什么？</strong>凭什么火箭不能像飞机一样重复使用？凭什么一枚火箭要花掉一个小国家的 GDP？</p>
+    <p>这个问题里藏着逃逸速度的秘密：不是「怎么把现有方案做得更好」，而是<em>「这个问题本身是否成立」</em>。大多数人在优化答案。极少数人在挑战问题。问出那个不该问的问题 —— <strong>那就是你的第一宇宙速度。</strong></p>
+  </div>
+</section>
+
+<section class="break">
+  <span class="break-watermark" style="top:6%;left:5%;">引</span>
+  <span class="break-watermark" style="bottom:8%;right:5%;">力</span>
+  <q>愿景的重力井越深，<br>逃逸所需的<em>勇气</em>越大 ——<br>但一旦突破，<br>你将进入<span class="blu">自由轨道</span>。</q>
+  <p class="break-att">— The First Principle</p>
+</section>
+
+<section class="sec" style="padding-top:90px;padding-bottom:90px;">
+  <div class="stat-row">
+    <div class="stat"><div class="stat-val">11.2<span style="font-size:.38em;font-family:var(--serif);color:var(--text-mute);margin-left:4px;">km/s</span></div><div class="stat-lbl">地球逃逸速度<br>创造者突破常规所需的最低思维加速度</div></div>
+    <div class="stat"><div class="stat-val blue">99.9<span style="font-size:.38em;font-family:var(--serif);color:var(--text-mute);margin-left:4px;">%</span></div><div class="stat-lbl">人类历史上从未问过<br>「凭什么」的人口比例</div></div>
+    <div class="stat"><div class="stat-val">138<span style="font-size:.38em;font-family:var(--serif);color:var(--text-mute);margin-left:4px;">亿年</span></div><div class="stat-lbl">物理法则未曾改变的时间<br>创造的法则同样永恒</div></div>
+    <div class="stat"><div class="stat-val blue">3<span style="font-size:.38em;font-family:var(--serif);color:var(--text-mute);margin-left:4px;">次</span></div><div class="stat-lbl">SpaceX 连续爆炸次数<br>第四次 —— 成了</div></div>
+  </div>
+</section>
+
+<section class="sec" id="s3">
+  <div class="sec-rule"></div>
+  <div class="sec-num"><span class="cn">叁</span><span class="en">— Orbital Mechanics</span></div>
+  <h2 class="sec-title">方向比速度<em>重要一百倍</em></h2>
+  <div class="sec-body">
+    <p>在太空中，偏离 1 度，飞到火星时你已经偏了 <strong>100 万公里</strong>。创造的轨道同样如此 —— 早期的微小偏差，会在后期被指数级放大。</p>
+    <p class="shout">方向 ＞ 速度</p>
+    <p>大多数创业者死于什么？不是懒惰，不是缺钱，不是竞争对手太强。死于<em>在错误的方向上疯狂加速</em>。他们极其努力，每天工作 16 个小时 —— 然后发现自己在往北极跑，而目的地是赤道。</p>
+    <p class="pullquote">If you find yourself in a hole, stop digging. — Will Rogers</p>
+    <p><strong>校准轨道的方法极其简单：</strong>每过一段时间，停下来问自己 —— 我现在做的事情，和我的核心目标之间的夹角是多少？如果夹角大于 5 度，<em>立即调整</em>。不是明天，不是下周，不是「等忙完这段」。现在。</p>
+    <p>最好的创造者往往看起来「懒惰」—— 他们不是懒惰，他们是在<strong>保护自己的轨道不被微小的引力扰动带偏</strong>。拒绝一百个好机会，只为了一个对的机会。这种纪律，比熬夜加班难一百倍。</p>
+  </div>
+</section>
+
+<section class="sec" id="s4">
+  <div class="sec-rule"></div>
+  <div class="sec-num"><span class="cn">肆</span><span class="en">— Event Horizon</span></div>
+  <h2 class="sec-title">跨过那条线，<br><em>就回不去了</em></h2>
+  <div class="sec-body">
+    <p>黑洞有一个事件视界。在视界之外，你还可以逃脱。一旦跨过 —— <strong>连光都跑不出来。</strong></p>
+    <p class="shout-sm">公告 · 辞职 · 发布 · 收费</p>
+    <p>这四个动作中的任何一个，都会把你推进一个不可逆的轨道。你在社群媒体上宣布要做一件事，你的声誉就进入了轨道。你辞掉工作全职创业，你的生存压力就进入了轨道。你把产品发布出去，用户的期望就进入了轨道。你让客户付了钱，你的交付义务就进入了轨道。</p>
+    <p>大多数人害怕这四个动作。<em>而这正是关键所在。</em></p>
+    <p class="pullquote">The moment one definitely commits oneself, then Providence moves too. — W.H. Murray</p>
+    <p>在你宣布之前，一切都是可选的、可撤回的、安全的 —— 也正因如此，<strong>什么都不会发生。</strong>安全是创造的反义词。不是因为创造必然危险，而是因为创造需要一种只有「不可逆」才能激发的专注强度。</p>
+    <p>想一想你人生中真正做成的事情。是不是都在某个时刻，你把自己逼到了<em>没有退路</em>的位置？那条线，就是你的事件视界。跨过去。现在。</p>
+  </div>
+</section>
+
+<section class="break">
+  <span class="break-watermark" style="top:8%;right:6%;">界</span>
+  <q>安全是<em>创造</em>的反义词。<br>不可逆，<br>才是<span class="blu">专注</span>的真正来源。</q>
+  <p class="break-att">— The Event Horizon Principle</p>
+</section>
+
+<section class="sec" id="s5">
+  <div class="sec-rule"></div>
+  <div class="sec-num"><span class="cn">伍</span><span class="en">— The Four Engines</span></div>
+  <h2 class="sec-title">把法则变成<em>行动</em></h2>
+  <div class="card-grid">
+    <div class="card-wrap"><div class="card" data-tilt data-interactive>
+      <div class="card-tag">Engine 01</div><h4>看见</h4>
+      <p>你无法创造你看不见的东西。每天给自己 30 分钟「空白凝视」—— 不刷手机，不看任何东西，就盯着一个问题看。最伟大的洞见永远诞生于凝视，而非信息洪流。</p>
+    </div></div>
+    <div class="card-wrap"><div class="card" data-tilt data-interactive>
+      <div class="card-tag">Engine 02</div><h4>发布</h4>
+      <p>完成比完美重要 100 倍。一个发布出去的半成品，价值大于十个脑中完美幻想。前者产生数据，后者只产生幻觉。发布 → 被骂 → 改 → 再发布。这是唯一的路。</p>
+    </div></div>
+    <div class="card-wrap"><div class="card" data-tilt data-interactive>
+      <div class="card-tag">Engine 03</div><h4>迭代</h4>
+      <p>第一次做出来的东西应该让你羞耻。如果没有，说明你发布得太晚了。每一轮削掉 20% 的丑陋，增加 10% 的野心。十轮之后，你已不在同一个维度。</p>
+    </div></div>
+    <div class="card-wrap"><div class="card" data-tilt data-interactive>
+      <div class="card-tag">Engine 04</div><h4>复利</h4>
+      <p>每一次发布都是一笔永久的信用存款。你做过的东西不会消失 —— 它们在网络上永远替你说话。五年后的你，会感谢今天那个「先发了再说」的自己。</p>
+    </div></div>
+  </div>
+</section>
+
+<section class="close">
+  <p class="close-pre">四条法则。四台引擎。<br>宇宙用它们运转了 138 亿年。<br>达芬奇用它画出了蒙娜丽莎。<br>马斯克用它造出了可回收火箭。<br><strong>现在，轮到你了。</strong></p>
+  <div class="close-rule"></div>
+  <div class="close-big"><span class="w">开始</span><span class="w">造物</span></div>
+  <p class="close-tag">— Now. Create. —</p>
+</section>
+
+<footer>
+  <div class="mark">终</div>
+  <p>四条法则 · 四台引擎 · 一个邀请</p>
+  <p class="en">FIN — THE LAWS OF CREATION — MMXXVI</p>
+</footer>
+
+<script>
+/* =======================================================================
+   MILKY WAY STARFIELD — subtle galactic band, fluid mouse interaction
+   ======================================================================= */
+class Starfield {
+  constructor(c) {
+    this.c=c; this.ctx=c.getContext('2d');
+    this.w=0; this.h=0; this.dpr=Math.min(devicePixelRatio,2);
+    this.mx=.5; this.my=.5; this.mvx=0; this.mvy=0; this.pmx=.5; this.pmy=.5;
+
+    // 4 visible layers — bright enough to see, twinkling
+    this.layers=[
+      {n:150,  spd:.03, sz:[.25,.50], a:[.18,.40], col:[170,180,200], react:.05, z:'dust'},
+      {n:280,  spd:.06, sz:[.28,.58], a:[.22,.46], col:[185,195,215], react:.14, z:'far'},
+      {n:350,  spd:.10, sz:[.32,.68], a:[.28,.52], col:[198,208,228], react:.30, z:'mid'},
+      {n:420,  spd:.16, sz:[.36,.78], a:[.34,.60], col:[212,222,242], react:.55, z:'near'},
+    ];
+    this.total=this.layers.reduce((s,l)=>s+l.n,0);
+    this.particles=[];
+    this.cellSize=140; this.cols=0; this.rows=0; this.grid=[];
+    this.frameN=0; this.shockwaves=[]; this.meteors=[]; this.meteorTimer=0;
+
+    // Cursor trail & sparks
+    this.trail=[]; this.sparks=[];
+    this.orbs=[];
+    for(let i=0;i<6;i++) this.orbs.push({a:(i/6)*Math.PI*2,r:8+Math.random()*14,sp:2.5+Math.random()*4,sz:.3+Math.random()*.8,al:.35+Math.random()*.35,ecc:.2+Math.random()*.5});
+
+    this.init(); this.resize();
+    window.addEventListener('resize',()=>this.resize());
+    this.lt=performance.now();
+    this.loop=this.loop.bind(this); this.loop();
+  }
+  init(){
+    this.particles=[];
+    for(let l=0;l<this.layers.length;l++){
+      const ly=this.layers[l];
+      for(let i=0;i<ly.n;i++){
+        // Milky Way band bias: concentrate particles around a diagonal band
+        const bandCenter = 0.48; // center of the galactic band
+        const bandWidth = 0.55;   // width of the band
+        let y;
+        if (Math.random() < 0.55) {
+          // Particles in the band: Gaussian-like distribution around center
+          y = bandCenter + (Math.random() - 0.5) * bandWidth;
+        } else {
+          // Scattered particles everywhere
+          y = Math.random();
+        }
+        y = Math.max(0, Math.min(1, y));
+        this.particles.push({
+          x: Math.random(), y,
+          vx:(Math.random()-.5)*ly.spd*.2, vy:(Math.random()-.5)*ly.spd*.2,
+          bs:ly.sz[0]+Math.random()*(ly.sz[1]-ly.sz[0]),
+          ba:ly.a[0]+Math.random()*(ly.a[1]-ly.a[0]),
+          l, ph:Math.random()*Math.PI*2, phs:.001+Math.random()*.008,
+          tw:Math.random()*Math.PI*2, tws:.005+Math.random()*.018,
+        });
+      }
+    }
+  }
+  resize(){
+    this.w=innerWidth; this.h=innerHeight;
+    this.c.width=this.w*this.dpr; this.c.height=this.h*this.dpr;
+    this.c.style.width=this.w+'px'; this.c.style.height=this.h+'px';
+    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+    this.cols=Math.ceil(this.w/this.cellSize);
+    this.rows=Math.ceil(this.h/this.cellSize);
+    this.grid=new Array(this.cols*this.rows);
+  }
+  setMouse(nx,ny){ this.pmx=this.mx; this.pmy=this.my; this.mx=nx; this.my=ny; this.mvx=(this.mx-this.pmx)*60; this.mvy=(this.my-this.pmy)*60; }
+  shock(x,y){ this.shockwaves.push({x,y,r:0,str:1,maxR:Math.min(this.w,this.h)*.18}); }
+  addTrail(x,y,vx,vy){
+    this.trail.push({x,y,vx:vx*.15,vy:vy*.15,life:1,sz:.7+Math.random()*1});
+    if(this.trail.length>80) this.trail.shift();
+  }
+  burst(x,y){
+    const n=10+Math.floor(Math.random()*6);
+    for(let i=0;i<n;i++){
+      const angle=Math.random()*Math.PI*2, speed=1.5+Math.random()*8;
+      this.sparks.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:1,sz:.2+Math.random()*1,clr:Math.random()<.3?'gold':'blue'});
+    }
+  }
+
+  buildGrid(){
+    this.grid.fill(null);
+    for(let i=0;i<this.particles.length;i++){
+      const p=this.particles[i], px=p.x*this.w, py=p.y*this.h;
+      const gx=Math.min(this.cols-1,Math.max(0,Math.floor(px/this.cellSize)));
+      const gy=Math.min(this.rows-1,Math.max(0,Math.floor(py/this.cellSize)));
+      const idx=gy*this.cols+gx;
+      if(!this.grid[idx]) this.grid[idx]=[];
+      this.grid[idx].push(i);
+    }
+  }
+  neighbors(px,py){
+    const gx=Math.floor(px/this.cellSize), gy=Math.floor(py/this.cellSize), out=[];
+    for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+      const nx=gx+dx, ny=gy+dy;
+      if(nx>=0&&nx<this.cols&&ny>=0&&ny<this.rows){ const c=this.grid[ny*this.cols+nx]; if(c) out.push(...c); }
+    }
+    return out;
+  }
+
+  update(dt){
+    const dtc=Math.min(dt,.1);
+    const mpx=this.mx*this.w, mpy=this.my*this.h;
+    for(let i=0;i<this.particles.length;i++){
+      const p=this.particles[i], ly=this.layers[p.l];
+      const px=p.x*this.w, py=p.y*this.h;
+      const dx=px-mpx, dy=py-mpy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      const maxD=320*ly.react;
+      if(dist<maxD&&dist>.01){
+        const f=(1-dist/maxD)**2*ly.react;
+        const nx=dx/dist, ny=dy/dist;
+        p.vx+=nx*f*4.5*dtc; p.vy+=ny*f*4.5*dtc;
+        p.vx+=this.mvx*f*.013*dtc; p.vy+=this.mvy*f*.013*dtc;
+      }
+      for(const sw of this.shockwaves){
+        const sdx=px-sw.x, sdy=py-sw.y;
+        const sd=Math.sqrt(sdx*sdx+sdy*sdy);
+        const rd=Math.abs(sd-sw.r);
+        if(rd<30&&sd>.01){ const sf=(1-rd/30)*sw.str*2; p.vx+=(sdx/sd)*sf*dtc; p.vy+=(sdy/sd)*sf*dtc; }
+      }
+      p.x+=p.vx*dtc; p.y+=p.vy*dtc;
+      p.vx*=.945; p.vy*=.945;
+      if(p.x<-.05)p.x+=1.1; if(p.x>1.05)p.x-=1.1;
+      if(p.y<-.05)p.y+=1.1; if(p.y>1.05)p.y-=1.1;
+      p.x=Math.max(-.1,Math.min(1.1,p.x)); p.y=Math.max(-.1,Math.min(1.1,p.y));
+      const spd=Math.sqrt(p.vx*p.vx+p.vy*p.vy), maxS=ly.spd*2.5;
+      if(spd>maxS){p.vx=(p.vx/spd)*maxS; p.vy=(p.vy/spd)*maxS;}
+      p.vx+=Math.sin(p.ph)*.04*ly.spd*dtc; p.vy+=Math.cos(p.ph*1.25)*.04*ly.spd*dtc;
+      p.ph+=p.phs*dtc;
+    }
+    for(let s=this.shockwaves.length-1;s>=0;s--){
+      const sw=this.shockwaves[s]; sw.r+=320*dtc; sw.str*=.91;
+      if(sw.r>sw.maxR||sw.str<.005) this.shockwaves.splice(s,1);
+    }
+    // Beautiful meteor system — one sweeps across every 3-5 seconds
+    this.meteorTimer -= dtc;
+    if (this.meteorTimer <= 0 && this.w > 0) {
+      // Random diagonal path across screen
+      const fromLeft = Math.random() < 0.5;
+      const topThird = Math.random() < 0.5;
+      const sx = fromLeft ? -this.w * 0.05 : this.w * 1.05;
+      const sy = topThird ? this.h * (0.05 + Math.random() * 0.25) : this.h * (0.55 + Math.random() * 0.30);
+      const ex = fromLeft ? this.w * 1.05 : -this.w * 0.05;
+      const ey = sy + this.h * (0.25 + Math.random() * 0.45) * (fromLeft ? 1 : -1);
+      this.meteors.push({
+        sx, sy, ex, ey,
+        progress: 0,
+        speed: 0.018 + Math.random() * 0.022, // ~6-10s extremely slow drift
+        life: 1,
+        trailParticles: [],
+      });
+      this.meteorTimer = 10 + Math.random() * 8; // next meteor in 10-18s
+    }
+    // Update meteors
+    for (let s = this.meteors.length - 1; s >= 0; s--) {
+      const m = this.meteors[s];
+      m.progress += dtc / m.speed;
+      if (m.progress >= 1) {
+        m.life -= dtc * 1.2; // slow graceful fade
+      }
+      // Spawn trail sparks along the path
+      if (m.progress < 1.1 && Math.random() < 0.35) {
+        const px = m.sx + (m.ex - m.sx) * Math.min(1, m.progress);
+        const py = m.sy + (m.ey - m.sy) * Math.min(1, m.progress);
+        m.trailParticles.push({
+          x: px + (Math.random() - 0.5) * 8,
+          y: py + (Math.random() - 0.5) * 8,
+          life: 1,
+          size: 0.4 + Math.random() * 1.4,
+        });
+      }
+      // Update trail sparks
+      for (let t = m.trailParticles.length - 1; t >= 0; t--) {
+        m.trailParticles[t].life -= dtc * 0.9;
+        if (m.trailParticles[t].life <= 0) m.trailParticles.splice(t, 1);
+      }
+      // Remove dead meteor
+      if (m.life <= 0 && m.trailParticles.length === 0) {
+        this.meteors.splice(s, 1);
+      }
+    }
+    // Update trail particles
+    for(let i=this.trail.length-1;i>=0;i--){
+      const t=this.trail[i]; t.x+=t.vx; t.y+=t.vy; t.life-=.018;
+      if(t.life<=0) this.trail.splice(i,1);
+    }
+    // Update spark particles
+    for(let i=this.sparks.length-1;i>=0;i--){
+      const s=this.sparks[i]; s.x+=s.vx; s.y+=s.vy; s.vx*=.95; s.vy*=.95; s.life-=.022;
+      if(s.life<=0) this.sparks.splice(i,1);
+    }
+  }
+
+  draw(){
+    const ctx=this.ctx;
+    // Semi-transparent clear → frame persistence, zero flicker
+    ctx.fillStyle='rgba(3,3,16,0.10)'; ctx.fillRect(0,0,this.w,this.h);
+    const mpx=this.mx*this.w, mpy=this.my*this.h;
+
+    for(const p of this.particles){
+      const px=p.x*this.w, py=p.y*this.h;
+      const dx=px-mpx, dy=py-mpy;
+      const dm=Math.sqrt(dx*dx+dy*dy);
+      let boost=0; if(dm<160) boost=(1-dm/160)**2*.22;
+      const a=Math.min(1,p.ba+boost), s=p.bs*(1+boost*.5);
+      const col=this.layers[p.l].col;
+      ctx.fillStyle=`rgba(${col[0]},${col[1]},${col[2]},${a.toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(px,py,s,0,Math.PI*2); ctx.fill();
+      if(boost>.12){ ctx.fillStyle=`rgba(255,255,255,${(boost*.4).toFixed(3)})`; ctx.beginPath(); ctx.arc(px,py,s*.22,0,Math.PI*2); ctx.fill(); }
+    }
+
+    // Draw meteors — beautiful sweeping trails
+    for(const m of this.meteors){
+      const px = m.sx + (m.ex - m.sx) * Math.min(1, m.progress);
+      const py = m.sy + (m.ey - m.sy) * Math.min(1, m.progress);
+      const trailLen = this.w * 0.22;
+      const dx = m.ex - m.sx, dy = m.ey - m.sy;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const nx = dx / dist, ny = dy / dist;
+
+      // Main trail — thick gradient line behind the head
+      const trailStartX = px - nx * trailLen;
+      const trailStartY = py - ny * trailLen;
+      const grad = ctx.createLinearGradient(trailStartX, trailStartY, px, py);
+      const tailAlpha = Math.max(0, m.life - 0.3);
+      grad.addColorStop(0, `rgba(255,255,255,0)`);
+      grad.addColorStop(0.4, `rgba(180,200,235,${(tailAlpha * 0.18).toFixed(3)})`);
+      grad.addColorStop(0.8, `rgba(210,225,248,${(tailAlpha * 0.35).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(245,250,255,${(tailAlpha * 0.55).toFixed(3)})`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2.2 * m.life;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(trailStartX, trailStartY);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      // Inner bright core
+      const grad2 = ctx.createLinearGradient(trailStartX, trailStartY, px, py);
+      grad2.addColorStop(0, 'rgba(255,255,255,0)');
+      grad2.addColorStop(0.7, `rgba(255,255,255,${(tailAlpha * 0.12).toFixed(3)})`);
+      grad2.addColorStop(1, `rgba(255,255,255,${(tailAlpha * 0.5).toFixed(3)})`);
+      ctx.strokeStyle = grad2;
+      ctx.lineWidth = 0.8 * m.life;
+      ctx.beginPath();
+      ctx.moveTo(trailStartX, trailStartY);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      // Bright head glow
+      if (m.progress < 1.05) {
+        const headGlow = ctx.createRadialGradient(px, py, 0, px, py, 16);
+        headGlow.addColorStop(0, 'rgba(255,255,255,0.7)');
+        headGlow.addColorStop(0.15, 'rgba(210,230,250,0.4)');
+        headGlow.addColorStop(0.5, 'rgba(140,180,220,0.08)');
+        headGlow.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = headGlow;
+        ctx.beginPath();
+        ctx.arc(px, py, 16, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core dot
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Trail spark particles
+      for (const tp of m.trailParticles) {
+        const alpha = tp.life * 0.7;
+        ctx.fillStyle = `rgba(200,220,255,${alpha.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(tp.x, tp.y, tp.size * tp.life, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Draw cursor trails
+    for(const t of this.trail){
+      ctx.fillStyle=`rgba(180,200,235,${(t.life*.38).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(t.x,t.y,t.sz*t.life,0,Math.PI*2); ctx.fill();
+    }
+    // Draw sparks
+    for(const s of this.sparks){
+      const c=s.clr==='gold'?`rgba(212,168,75,${(s.life*.65).toFixed(3)})`:`rgba(130,175,250,${(s.life*.65).toFixed(3)})`;
+      ctx.strokeStyle=c; ctx.lineWidth=s.sz*s.life; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(s.x,s.y); ctx.lineTo(s.x-s.vx*1.1,s.y-s.vy*1.1); ctx.stroke();
+    }
+
+    for(const sw of this.shockwaves){
+      const a=sw.str*.28;
+      ctx.strokeStyle=`rgba(212,168,75,${a.toFixed(3)})`; ctx.lineWidth=1*sw.str;
+      ctx.beginPath(); ctx.arc(sw.x,sw.y,sw.r,0,Math.PI*2); ctx.stroke();
+    }
+  }
+
+  loop(now){
+    const dt=(now-this.lt)/1000; this.lt=now;
+    if(dt>0&&dt<.5){this.update(dt); this.draw();}
+    requestAnimationFrame(this.loop);
+  }
+}
+
+/* =======================================================================
+   AURA — subtle cursor trail
+   ======================================================================= */
+/* =======================================================================
+   AUDIO
+   ======================================================================= */
+class AudioEngine {
+  constructor(){ this.ctx=null; this.master=null; this.on=false; this.drone=null; }
+  async init(){ if(this.ctx) return; try{this.ctx=new(window.AudioContext||window.webkitAudioContext)(); this.master=this.ctx.createGain(); this.master.gain.value=0; this.master.connect(this.ctx.destination);}catch(e){} }
+  async toggle(){
+    await this.init(); if(!this.ctx) return false;
+    if(this.ctx.state==='suspended') await this.ctx.resume();
+    this.on=!this.on; const now=this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.linearRampToValueAtTime(this.on?.35:0, now+.5);
+    if(this.on&&!this.drone) this.startDrone();
+    return this.on;
+  }
+  startDrone(){
+    const o1=this.ctx.createOscillator(), o2=this.ctx.createOscillator();
+    o1.type='sine'; o2.type='sine'; o1.frequency.value=65.4; o2.frequency.value=98;
+    const g=this.ctx.createGain(); g.gain.value=.02;
+    o1.connect(g); o2.connect(g); g.connect(this.master);
+    const lfo=this.ctx.createOscillator(); lfo.frequency.value=.05;
+    const lg=this.ctx.createGain(); lg.gain.value=.008;
+    lfo.connect(lg).connect(g.gain); o1.start(); o2.start(); lfo.start();
+    this.drone={o1,o2,lfo,g};
+  }
+  click(intensity=1){
+    if(!this.on||!this.ctx) return;
+    const now=this.ctx.currentTime;
+    const buf=this.ctx.createBuffer(1,this.ctx.sampleRate*.1,this.ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/d.length*14);
+    const src=this.ctx.createBufferSource(); src.buffer=buf;
+    const flt=this.ctx.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=500+Math.random()*1200; flt.Q.value=1.1;
+    const g=this.ctx.createGain(); g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(.3*intensity,now+.002); g.gain.exponentialRampToValueAtTime(.001,now+.12);
+    src.connect(flt).connect(g).connect(this.master); src.start(now); src.stop(now+.14);
+  }
+}
+
+/* =======================================================================
+   INIT
+   ======================================================================= */
+const stars = new Starfield(document.getElementById('stars'));
+const audio = new AudioEngine();
+
+const cAura=document.getElementById('c-aura'), cHalo=document.getElementById('c-halo'), cCore=document.getElementById('c-core');
+const progress=document.getElementById('progress'), audioBtn=document.getElementById('audio-btn');
+
+/* ===== CURSOR — tighter springs ===== */
+let tmx=innerWidth/2, tmy=innerHeight/2, pmx=tmx, pmy=tmy;
+let coreX=tmx, coreY=tmy, haloX=tmx, haloY=tmy, auraX=tmx, auraY=tmy;
+
+window.addEventListener('mousemove',(e)=>{ pmx=tmx; pmy=tmy; tmx=e.clientX; tmy=e.clientY; },{passive:true});
+
+(function tick(){
+  // Core: very tight (0.78)
+  coreX+=(tmx-coreX)*.78; coreY+=(tmy-coreY)*.78;
+  cCore.style.left=coreX+'px'; cCore.style.top=coreY+'px';
+  // Halo: tighter (0.30)
+  haloX+=(tmx-haloX)*.30; haloY+=(tmy-haloY)*.30;
+  cHalo.style.left=haloX+'px'; cHalo.style.top=haloY+'px';
+  // Aura: quicker (0.13)
+  auraX+=(tmx-auraX)*.13; auraY+=(tmy-auraY)*.13;
+  cAura.style.left=auraX+'px'; cAura.style.top=auraY+'px';
+
+  stars.setMouse(tmx/innerWidth,tmy/innerHeight);
+  const mvx=tmx-pmx, mvy=tmy-pmy;
+  if(Math.abs(mvx)>.15||Math.abs(mvy)>.15) stars.addTrail(tmx,tmy,mvx,mvy);
+  for(const o of stars.orbs){ o.a+=o.sp*.04; const ox=tmx+Math.cos(o.a)*o.r, oy=tmy+Math.sin(o.a)*o.r*o.ecc; if(Math.random()<.15) stars.trail.push({x:ox,y:oy,vx:0,vy:0,life:.35,sz:.25+Math.random()*.35}); }
+  pmx=tmx; pmy=tmy;
+  requestAnimationFrame(tick);
+})();
+
+/* ===== CLICK ===== */
+window.addEventListener('click',(e)=>{
+  if(e.target.closest('#audio-btn')) return;
+  stars.shock(e.clientX,e.clientY);
+  stars.burst(e.clientX,e.clientY);
+  audio.click(.6);
+});
+window.addEventListener('mousedown',()=>document.body.classList.add('clicking'));
+window.addEventListener('mouseup',()=>document.body.classList.remove('clicking'));
+
+/* ===== HOVER ===== */
+document.querySelectorAll('[data-interactive],[data-tilt],a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hover-link'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hover-link'));
+});
+
+/* ===== 3D CARDS ===== */
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+  card.addEventListener('mousemove',(e)=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+    card.style.transform=`rotateX(${(y-.5)*-14}deg) rotateY(${(x-.5)*14}deg) translateZ(3px)`;
+    card.style.setProperty('--mx',(x*100)+'%'); card.style.setProperty('--my',(y*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>{ card.style.transform='rotateX(0deg) rotateY(0deg) translateZ(0px)'; card.style.setProperty('--mx','50%'); card.style.setProperty('--my','50%'); });
+});
+
+/* ===== SCROLL ===== */
+window.addEventListener('scroll',()=>{ const h=document.documentElement; progress.style.width=((h.scrollTop/(h.scrollHeight-h.clientHeight))*100)+'%'; },{passive:true});
+
+/* ===== AUDIO ===== */
+audioBtn.addEventListener('click',async(e)=>{ e.stopPropagation(); const on=await audio.toggle(); audioBtn.classList.toggle('on',on); });
+
+/* ===== KEYBOARD ===== */
+window.addEventListener('keydown',async(e)=>{
+  if(e.key==='m'||e.key==='M'){ const on=await audio.toggle(); audioBtn.classList.toggle('on',on); }
+  else if(e.key===' '){ e.preventDefault(); const cx=innerWidth/2,cy=innerHeight/2; stars.shock(cx,cy); stars.burst(cx,cy); audio.click(1); }
+});
+
+/* ===== ENTRANCE ===== */
+setTimeout(()=>{ const cx=innerWidth/2,cy=innerHeight/2; for(let i=0;i<2;i++) setTimeout(()=>stars.shock(cx+(Math.random()-.5)*150,cy+(Math.random()-.5)*150),i*150); },300);
+
+console.log('%c造 物 法 则 %c· THE LAWS OF CREATION','font-size:36px;font-family:serif;font-weight:900;color:#d4a84b;','font-size:11px;color:#d0d2de;letter-spacing:.35em;');
+</script>
+</body>
+</html>
