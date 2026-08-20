@@ -84,8 +84,7 @@
     .card h3{margin:92px 0 18px;color:var(--ink);font-family:var(--serif);font-size:clamp(28px,2.6vw,40px);line-height:1.2}
     .card p{margin:0;color:var(--muted);font-family:var(--serif);font-size:16px;line-height:1.9}
     .band{position:relative;z-index:2;padding:50px 0;overflow:hidden;background:var(--lime);color:#07120e;transform:rotate(-1.2deg) scale(1.02)}
-    .band-track{display:flex;width:max-content;gap:44px;font-family:var(--serif);font-size:clamp(56px,8vw,126px);font-weight:900;line-height:1;letter-spacing:-.055em;transform:translate3d(calc(-9% + var(--mx)*-28px),0,0);will-change:transform}
-    .band-track span:nth-child(even){font-weight:400;font-style:italic;color:transparent;-webkit-text-stroke:1px #07120e}
+    .band-track{display:block;width:100%;padding:0 20px;text-align:center;white-space:nowrap;font-family:var(--serif);font-size:clamp(30px,7vw,112px);font-weight:900;line-height:1;letter-spacing:-.045em;transform:translate3d(calc(var(--mx)*-10px),0,0);will-change:transform}
     .world{width:min(1180px,100%);margin:auto;padding:clamp(150px,16vw,260px) clamp(20px,6vw,96px)}
     .world-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.7fr);gap:clamp(40px,8vw,120px);align-items:center}
     .world h2{margin:18px 0 34px}
@@ -107,7 +106,7 @@
     .reveal.in{opacity:1;transform:none}
     ::selection{background:var(--lime);color:#07120e}
     @media(min-width:1800px){.hero-copy{width:min(1680px,100%)}.intro,.story,.world{width:min(1420px,100%)}.prose{width:min(820px,100%)}.grid-field{min-height:660px}}
-    @media(max-width:760px){.topbar{padding:18px}.chapter{display:none}.hero{place-items:end start;padding-inline:20px}.power-stage{width:100vw;right:-42vw;top:35%;opacity:.75}.hero-meta{grid-template-columns:1fr}.scroll-note{display:none}.intro-grid,.story-head,.world-grid{grid-template-columns:1fr}.title-line.accent{margin-left:0}.big-num{font-size:100px}.story-index{position:static}.cards{grid-template-columns:1fr}.card{min-height:300px}.grid-field{min-height:420px}.pulse.one{left:68%}.world .prose{order:2}.globe{width:min(430px,86vw);margin:auto}.band-track{font-size:64px}footer{grid-template-columns:1fr}}
+    @media(max-width:760px){.topbar{padding:18px}.chapter{display:none}.hero{place-items:end start;padding-inline:20px}.power-stage{width:100vw;right:-42vw;top:35%;opacity:.75}.hero-meta{grid-template-columns:1fr}.scroll-note{display:none}.intro-grid,.story-head,.world-grid{grid-template-columns:1fr}.title-line.accent{margin-left:0}.big-num{font-size:100px}.story-index{position:static}.cards{grid-template-columns:1fr}.card{min-height:300px}.grid-field{min-height:420px}.pulse.one{left:68%}.world .prose{order:2}.globe{width:min(430px,86vw);margin:auto}.band-track{font-size:30px}footer{grid-template-columns:1fr}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.title-line,.power-stage,.ring,.grid-field::before,.pulse,.card,.band-track,.globe,.globe-line,.future h2,.future h2 em{transform:none!important}.progress{display:none}.reveal{opacity:1;transform:none;transition:none}}
   </style>
 </head>
@@ -158,7 +157,7 @@
         </div>
       </section>
 
-      <div class="band" aria-hidden="true"><div class="band-track"><span>风从海上来</span><span>光从荒漠来</span><span>电向世界去</span><span>风从海上来</span><span>光从荒漠来</span><span>电向世界去</span></div></div>
+      <div class="band" aria-hidden="true"><div class="band-track"><span>光从沙漠来电向世界去</span></div></div>
 
       <section class="world reveal" id="world">
         <div class="world-grid">
